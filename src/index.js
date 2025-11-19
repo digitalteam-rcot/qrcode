@@ -97,7 +97,6 @@ const getValidURL = (input) => {
   if (input.includes("rcot.co.uk")) {
     // Remove any existing protocol
     input = input.replace(/^(https?:\/\/)/, "");
-    // Remove www. if present (we'll add it back)
     input = input.replace(/^www\./, "");
     // Ensure it starts with https://www.
     return new URL(`https://www.${input}`);

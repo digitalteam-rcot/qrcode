@@ -81,9 +81,39 @@ const generateQRCode = (data, print = false) => {
 };
 
 const getValidURL = (input) => {
+  // Trim whitespace
+  input = input.trim();
+
+  // If it's just a path (starts with / or no protocol/domain), prepend rcot.co.uk
+  if (
+    input.startsWith("/") ||
+    (!input.includes("://") && !input.includes("."))
+  ) {
+    input = input.startsWith("/") ? input : `/${input}`;
+    return new URL(`https://www.rcot.co.uk${input}`);
+  }
+
+  // Handle rcot.co.uk URLs (with or without www, with or without protocol)
+  if (input.includes("rcot.co.uk")) {
+    // Remove any existing protocol
+    input = input.replace(/^(https?:\/\/)/, "");
+    // Remove www. if present (we'll add it back)
+    input = input.replace(/^www\./, "");
+    // Ensure it starts with https://www.
+    return new URL(`https://www.${input}`);
+  }
+
+  // For all other URLs
   try {
-    return new URL(input);
+    const url = new URL(input);
+    // Force https if http
+    if (url.protocol === "http:") {
+      url.protocol = "https:";
+    }
+    return url;
   } catch {
+    // If it fails, assume it's a domain without protocol
+    // Force https
     return new URL(`https://${input}`);
   }
 };
